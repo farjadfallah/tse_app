@@ -44,6 +44,9 @@ class Option:
     def get_type(self):
         pass
 
+    def get_similar_option(self):
+        return self.similar_option
+    
     def set_similar_option_to(self, the_option):
         self.similar_option = the_option
 

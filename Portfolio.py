@@ -15,7 +15,7 @@ class Portfolio:
         for share in self.shares:
             final_value += (share.get_value_at_price(final_price) * self.shares[share])
         for call in self.call_options:
-            final_value += (call.get_value_at_price(final_price, True) * self.call_options[call] )
+            final_value += (call.get_value_at_price(final_price, False) * self.call_options[call] )
         for put in self.put_options:
             final_value += (put.get_value_at_price(final_price) * self.put_options[put])
         for daramad_sabet in self.daramad_sabets:
@@ -28,10 +28,10 @@ class Portfolio:
         for share in self.shares:
             total_cost += (share.get_cost() * self.shares[share])
         for call in self.call_options:
-            price = call.get_cost_to_buy() if self.call_options[call] > 0 else call.get_cost_to_sell(True)
+            price = call.get_cost_to_buy() if self.call_options[call] > 0 else call.get_cost_to_sell(False)
             total_cost += (price * self.call_options[call])
         for put in self.put_options:
-            price = put.get_cost_to_buy() if self.put_options[put] > 0 else put.get_cost_to_sell(True)
+            price = put.get_cost_to_buy() if self.put_options[put] > 0 else put.get_cost_to_sell(False)
             total_cost += (price * self.put_options[put])
         for daramad_sabet in self.daramad_sabets:
             total_cost += (daramad_sabet.get_cost() * self.daramad_sabets[daramad_sabet])

@@ -56,8 +56,43 @@ class Covered_Call_filter(Filter):
 
 
 class Aribitrage_Filter(Filter):
-    def __init__(self, min_return, _min_days_to_mature, _sarkhat_or_latest = 'sarkhat'):
+    def __init__(self, _min_return, _min_days_to_mature, _min_roi, _sarkhat_or_latest = 'sarkhat'):
         super().__init__()
-
-        
+        self.min_return = _min_return
+        self.min_days_to_mature = _min_days_to_mature
+        self.sarkhat_or_latest = _sarkhat_or_latest
+        self.min_roi = _min_roi
     
+    def apply_filter(self, stocks_list, call_options_list, put_options_list):
+        print("===========================================")
+        print("Aribitrage filter result for these specs:")
+        print("minimum return=", self.min_return)
+        print("minimum days to mature= ", self.min_days_to_mature)
+        print("-------------------------------------------")
+        for call_op in call_options_list:
+            underlying_asset = call_op.get_underlying_asset()
+            opposite_put = call_op.get_similar_option()
+            if(opposite_put == None):
+                continue
+
+            total_cost = self.__calculate_total_cost(call_op, opposite_put, underlying_asset)
+            if(total_cost == None):
+                continue
+            expected_return = self.__calculate_expected_return(call_op, opposite_put, underlying_asset)
+            profit_percentage = (expected_return / total_cost - 1) * 100
+            roi = self.get_roi(profit_percentage, call_op.get_days_till_maturity())
+
+            if(profit_percentage > self.min_return and call_op.get_days_till_maturity() > self.min_days_to_mature and roi > self.min_roi ):
+                print('profit=',  f'{round(profit_percentage, 1):<5}','ROi=',f'{round(roi,1):<6}',  'days=',f'{call_op.get_days_till_maturity():<4}', f'{str(call_op):<10}', f'{call_op.get_cost_to_sell( False, self.sarkhat_or_latest):<10}', f'{str(opposite_put):<10} ',f'{opposite_put.get_cost_to_buy(  self.sarkhat_or_latest):<10}','  ua price = ',f'{round(underlying_asset.get_cost(self.sarkhat_or_latest), 0):<7}')
+        print("===========================================")
+
+
+
+    def __calculate_total_cost(self, call_op, put_op, underlying_asset):
+        if(put_op.get_cost_to_buy() == 0):
+            return None
+        return underlying_asset.get_cost(self.sarkhat_or_latest) - call_op.get_cost_to_sell(False) + put_op.get_cost_to_buy()
+        
+    def __calculate_expected_return(self, call_op, put_op, underlying_asset):
+        strike = call_op.get_strike_price()
+        return underlying_asset.get_value_at_price(strike) - call_op.get_value_at_price(strike) + put_op.get_value_at_price(strike)
