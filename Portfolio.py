@@ -28,10 +28,10 @@ class Portfolio:
         for share in self.shares:
             total_cost += (share.get_cost() * self.shares[share])
         for call in self.call_options:
-            price = call.get_cost_to_buy(False) if self.call_options[call] > 0 else call.get_cost_to_sell(False)
+            price = call.get_cost_to_buy() if self.call_options[call] > 0 else call.get_cost_to_sell(False)
             total_cost += (price * self.call_options[call])
         for put in self.put_options:
-            price = put.get_cost_to_buy(False) if self.put_options[put] > 0 else put.get_cost_to_sell(False)
+            price = put.get_cost_to_buy() if self.put_options[put] > 0 else put.get_cost_to_sell(False)
             total_cost += (price * self.put_options[put])
         for daramad_sabet in self.daramad_sabets:
             total_cost += (daramad_sabet.get_cost() * self.daramad_sabets[daramad_sabet])
