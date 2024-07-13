@@ -25,6 +25,7 @@ class DataProvider:
         self.__get_main_market_info(market_info)
         self.__get_payeh_market_info(market_info)
         self.__get_options_info(market_info)
+        market_info.find_relations()
         print("===============================")
         print("data was downloaded successfuly")
         print("===============================")

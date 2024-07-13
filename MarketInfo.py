@@ -8,7 +8,7 @@ class MarketInfo:
         self.stocks_list = []
         self.call_options_list = []
         self.put_options_list = []
-        
+        self.option_chains_list={}
 
     def find_stock_with_name(self, stock_name):
         for stock in self.stocks_list:
@@ -37,5 +37,34 @@ class MarketInfo:
         self.put_options_list.append(put_option)
 
 
+    def find_relations(self):
+        self.create_option_chains()
+        #self.pair_similar_call_and_puts()
+
     def apply_filter(self, the_filter):
         the_filter.apply_filter(self.stocks_list, self.call_options_list, self.put_options_list)
+
+
+    def create_option_chains(self):
+        for call in self.call_options_list:
+            self.__add_option_to_chain(call)
+
+        for put in self.put_options_list:
+            self.__add_option_to_chain(put)
+
+    def __add_option_to_chain(self, option): 
+        ua_asset = str(option.get_underlying_asset())
+        days_till_maturity = option.get_days_till_maturity()
+        if(ua_asset not in self.option_chains_list):
+                self.option_chains_list[ua_asset] = {}
+                self.option_chains_list[ua_asset][days_till_maturity] = []
+                self.option_chains_list[ua_asset][days_till_maturity].append(option)
+        else:
+            if(days_till_maturity not in self.option_chains_list[ua_asset]):
+                self.option_chains_list[ua_asset][days_till_maturity] = []
+                self.option_chains_list[ua_asset][days_till_maturity].append(option)
+            else:
+                self.option_chains_list[ua_asset][days_till_maturity].append(option)
+
+    def print_chain(self):
+        print(self.option_chains_list)
