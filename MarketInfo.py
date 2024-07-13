@@ -39,11 +39,27 @@ class MarketInfo:
 
     def find_relations(self):
         self.create_option_chains()
-        #self.pair_similar_call_and_puts()
+        self.pair_similar_call_and_puts()
 
     def apply_filter(self, the_filter):
         the_filter.apply_filter(self.stocks_list, self.call_options_list, self.put_options_list)
 
+
+    def pair_similar_call_and_puts(self):
+
+        for call in self.call_options_list:
+            the_strike = call.get_strike_price()
+            the_coresponding_chain = self.option_chains_list[str(call.get_underlying_asset())][call.get_days_till_maturity()] 
+            for option in the_coresponding_chain:
+                if(option.get_type() == 'put' and option.get_strike_price() == the_strike ):
+                    call.set_similar_option_to(option)
+
+        for put in self.put_options_list:
+            the_strike = put.get_strike_price()
+            the_coresponding_chain = self.option_chains_list[str(put.get_underlying_asset())][put.get_days_till_maturity()] 
+            for option in the_coresponding_chain:
+                if(option.get_type() == 'call' and option.get_strike_price() == the_strike ):
+                    put.set_similar_option_to(option)
 
     def create_option_chains(self):
         for call in self.call_options_list:
@@ -65,6 +81,3 @@ class MarketInfo:
                 self.option_chains_list[ua_asset][days_till_maturity].append(option)
             else:
                 self.option_chains_list[ua_asset][days_till_maturity].append(option)
-
-    def print_chain(self):
-        print(self.option_chains_list)

@@ -20,4 +20,3 @@ class Tseapp:
         print(self.portfolio.get_total_cost())
         self.portfolio.plot_chart(.8,20000)
 
-        self.market_info.print_chain()

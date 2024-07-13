@@ -11,6 +11,7 @@ class Option:
         self.last_price = _last_price
         self.option_size = 1000
         self.vajh_tazmin = 0
+        self.similar_option = None
 
     def get_cost_to_buy(self, sarkhat_or_latest = 'sarkhat'):
         buy_price =  self.best_foroosh if sarkhat_or_latest == 'sarkhat' else self.last_price
@@ -40,5 +41,11 @@ class Option:
     def get_days_till_maturity(self):
         return self.days_till_maturity
     
+    def get_type(self):
+        pass
+
+    def set_similar_option_to(self, the_option):
+        self.similar_option = the_option
+
     def __repr__(self) -> str:
         return self.ticker
