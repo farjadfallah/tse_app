@@ -18,9 +18,12 @@ class Option:
 
     def get_cost_to_sell(self, needs_vajh_tazmin,  sarkhat_or_latest = 'sarkhat'):
         sell_price =  self.best_kharid if sarkhat_or_latest == 'sarkhat' else self.last_price
-        return sell_price + self.vajh_tazmin if needs_vajh_tazmin else sell_price
+        if(not needs_vajh_tazmin):
+            return sell_price
+        else:
+            return (-1) * self.vajh_tazmin
     
-    def get_value_at_price(self, final_price):
+    def get_value_at_price(self, final_price, had_vajh_tazmin= False, sarkhat_or_latest= 'sarkhat'):
         pass
 
     def check_name(self, chosen_ticker):

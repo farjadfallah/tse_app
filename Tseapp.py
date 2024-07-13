@@ -15,6 +15,7 @@ class Tseapp:
 
 
         self.portfolio.add_share(self.market_info.find_stock_with_name("اهرم"),1000)
-        self.portfolio.add_put(self.market_info.find_option_with_name("طهرم5003"),1000)
         self.portfolio.add_call(self.market_info.find_option_with_name("ضهرم5003"),-1000)
-        self.portfolio.plot_chart(.8,2500)
+        print(self.portfolio.get_value_at_price(20000, 100))
+        print(self.portfolio.get_total_cost())
+        self.portfolio.plot_chart(.8,20000)

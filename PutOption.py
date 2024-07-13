@@ -7,8 +7,12 @@ class PutOption(Option):
         self.vajh_tazmin = self.__cal_vajh_tazmin(self.u_asset.get_close_price() , self.strike, self.option_size)
     
     
-    def get_value_at_price(self, final_price):
-        return max(self.strike - final_price, 0)
+    def get_value_at_price(self, final_price, had_vajh_tazmin= False, sarkhat_or_latest= 'sarkhat'):
+        if(not had_vajh_tazmin):
+            return max(self.strike - final_price, 0)
+        else:
+            previous_frozen_premium = self.best_kharid if sarkhat_or_latest == 'sarkhat' else self.last_price
+            return (-1) * (self.vajh_tazmin + previous_frozen_premium) + max(self.strike - final_price, 0)
         
     
     
