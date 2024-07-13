@@ -10,16 +10,16 @@ class Portfolio:
         self.put_options = _put_options
         self.daramad_sabets = _darmad_sabets
 
-    def get_value_at_strike(self, final_price, days_till_maturity):
+    def get_value_at_price(self, final_price, days_till_maturity):
         final_value = 0
         for share in self.shares:
-            final_value += (share.get_value_at_strike(final_price) * self.shares[share])
+            final_value += (share.get_value_at_price(final_price) * self.shares[share])
         for call in self.call_options:
-            final_value += (call.get_value_at_strike(final_price) * self.call_options[call])
+            final_value += (call.get_value_at_price(final_price) * self.call_options[call])
         for put in self.put_options:
-            final_value += (put.get_value_at_strike(final_price) * self.put_options[put])
+            final_value += (put.get_value_at_price(final_price) * self.put_options[put])
         for daramad_sabet in self.daramad_sabets:
-            final_value += (daramad_sabet.get_value_at_strike(days_till_maturity) * self.daramad_sabets[daramad_sabet])
+            final_value += (daramad_sabet.get_value_at_price(days_till_maturity) * self.daramad_sabets[daramad_sabet])
 
         return final_value
 
@@ -64,7 +64,7 @@ class Portfolio:
 
     def plot_chart(self, change, curr_price):
         the_linespace =  np.linspace(curr_price*(1-change), curr_price*(1+change),100)
-        y = [((self.get_value_at_strike(x,110) - self.get_total_cost())/(self.get_total_cost()))+1 for x in the_linespace]
+        y = [((self.get_value_at_price(x,110) - self.get_total_cost())/(self.get_total_cost()))+1 for x in the_linespace]
         for i in range(len(the_linespace)-1):
             if y[i] < 1:
                 plt.plot([the_linespace[i], the_linespace[i + 1]], [y[i], y[i + 1]], color='r')  

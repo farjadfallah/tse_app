@@ -25,7 +25,7 @@ class Stock:
     def get_cost(self, sarkhat_or_latest = 'sarkhat'):
         return (self.best_foroosh if sarkhat_or_latest == 'sarkhat' else self.last) * (1+self.spread/100)
   
-    def get_value_at_strike(self, final_price):
+    def get_value_at_price(self, final_price):
         return final_price
        
 

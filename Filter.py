@@ -48,7 +48,7 @@ class Covered_Call_filter(Filter):
 
     def __calculate_expected_return(self, call_option, underlying_asset):
         strike = call_option.get_strike_price()
-        return underlying_asset.get_value_at_strike(strike) - call_option.get_value_at_strike(strike)
+        return underlying_asset.get_value_at_price(strike) - call_option.get_value_at_price(strike)
     
     def __calculte_confidence_interval(self, call_option, underlying_asset):
         return (1- call_option.get_strike_price() / underlying_asset.get_cost(self.sarkhat_or_latest)) * 100
