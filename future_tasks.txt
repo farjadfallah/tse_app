@@ -1,0 +1,7 @@
+things to be done:
+
+prioritize freezing stocks for different options in portfolio
+add arbitrage filter
+add previous data section to extract probability models
+add a section to build costum probability models
+add a section to search for the best (highest expectation and lowest variance) options/stock/fixed income combinations base on a probability model
