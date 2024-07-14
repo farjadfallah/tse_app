@@ -15,7 +15,7 @@ class CallOption(Option):
             return (-1) * (self.vajh_tazmin + previous_frozen_premium) + max(final_price - self.strike, 0) 
 
     def __cal_vajh_tazmin (self, ua_close, strike_price, op_size):
-        zarib_gerd = 10000  
+        zarib_gerd = 1000  
         op_loss = max(strike_price - ua_close, 0 ) * op_size
         firs_method = 0.2 * ua_close * op_size - op_loss
         second_method = 0.1 * strike_price * op_size
