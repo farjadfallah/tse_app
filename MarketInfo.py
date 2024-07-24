@@ -42,7 +42,8 @@ class MarketInfo:
         self.pair_similar_call_and_puts()
 
     def apply_filter(self, the_filter):
-        the_filter.apply_filter(self.stocks_list, self.call_options_list, self.put_options_list)
+        result = the_filter.apply_filter(self.stocks_list, self.call_options_list, self.put_options_list)
+        return result
 
 
     def pair_similar_call_and_puts(self):
