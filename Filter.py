@@ -17,9 +17,9 @@ class Filter:
         for i in range(len(results)):
             for j in range(i, len(results)):
                 if(results[i][key] < results[j][key]):
-                    tmp = results[i][key]
-                    results[i][key] = results[j][key]
-                    results[j][key] = tmp
+                    tmp = results[i]
+                    results[i] = results[j]
+                    results[j] = tmp
         return results
 
 class Covered_Call_filter(Filter):
