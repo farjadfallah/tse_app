@@ -18,12 +18,14 @@ def arbitrage():
     min_return = float(information["min_Return"]) if information != None else 0
     min_days_to_mature = int(information["min_days_to_mature"]) if information != None else 0
     min_ROI = float(information["min_ROI"]) if information != None else 0
-    print(min_return,min_days_to_mature, min_ROI )
-    print(information)
+    
     results = the_app.get_arbitrage_filter(min_return,min_days_to_mature,min_ROI)
+    
     return render_template('arbitrage.html', results=results, min_return = min_return,  min_days_to_mature = min_days_to_mature,min_ROI =min_ROI) 
 
 
 
 if __name__ == '__main__':
     app.run(host='192.168.1.50')
+    
+    

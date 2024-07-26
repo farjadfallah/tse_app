@@ -9,7 +9,7 @@ class Filter:
         pass
 
     def get_roi(self, non_roi_return, duration):
-        if(duration+1 == 0 ):
+        if(duration+1 <= 0 ):
             return -100
         return (pow((1 + (non_roi_return/100))+ 0.000001, 365/(duration+1)) -1)*100
 

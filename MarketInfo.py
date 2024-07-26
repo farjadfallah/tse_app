@@ -69,6 +69,12 @@ class MarketInfo:
         for put in self.put_options_list:
             self.__add_option_to_chain(put)
 
+    def reset_informations(self):
+        self.stocks_list = []
+        self.call_options_list = []
+        self.put_options_list = []
+        self.option_chains_list={}
+
     def __add_option_to_chain(self, option): 
         ua_asset = str(option.get_underlying_asset())
         days_till_maturity = option.get_days_till_maturity()

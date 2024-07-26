@@ -34,5 +34,7 @@ class Tseapp:
 
     def get_arbitrage_filter(self, min_return, min_days_to_mature, min_roi):
         the_filter = Aribitrage_Filter(min_return, min_days_to_mature, min_roi)
+        self.market_info.reset_informations()
+        self.data_provider.get_info(self.market_info)
         results = self.market_info.apply_filter(the_filter)
         return results
