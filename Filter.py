@@ -13,6 +13,14 @@ class Filter:
             return -100
         return (pow((1 + (non_roi_return/100))+ 0.000001, 365/(duration+1)) -1)*100
 
+    def sort_results_by(self, key, results):
+        for i in range(len(results)):
+            for j in range(i, len(results)):
+                if(results[i][key] < results[j][key]):
+                    tmp = results[i][key]
+                    results[i][key] = results[j][key]
+                    results[j][key] = tmp
+        return results
 
 class Covered_Call_filter(Filter):
 
@@ -45,7 +53,7 @@ class Covered_Call_filter(Filter):
                 results.append(the_result)
                 print(f'{str(call_op):<15}','roi=',  round(roi, 1), '    confidence interval = ', round(confidence_interval, 1), '  ua price = ', underlying_asset.get_cost(self.sarkhat_or_latest), '      optoins price = ', call_op.get_cost_to_sell( False, self.sarkhat_or_latest))
         print("===========================================")
-        return results
+        return self.sort_results_by('roi', results)
 
             
 
@@ -94,7 +102,8 @@ class Aribitrage_Filter(Filter):
                 results.append(the_result)
                 print('profit=',  f'{round(profit_percentage, 1):<5}','ROi=',f'{round(roi,1):<6}',  'days=',f'{call_op.get_days_till_maturity():<4}', f'{str(call_op):<10}', f'{call_op.get_cost_to_sell( False, self.sarkhat_or_latest):<10}', f'{str(opposite_put):<10} ',f'{opposite_put.get_cost_to_buy(  self.sarkhat_or_latest):<10}','  ua price = ',f'{round(underlying_asset.get_cost(self.sarkhat_or_latest), 0):<7}')
         print("===========================================")
-        return results
+
+        return self.sort_results_by('roi', results)
 
 
 
