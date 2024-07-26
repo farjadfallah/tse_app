@@ -8,10 +8,17 @@
 <body>
     <h5>home</h5>
     <form method="POST" action="/arbitrage" enctype="multipart/form-data">
-        <input type="int" name="min_Return" placeholder="min_Return" value="0">
-        <input type="int" name="min_days_to_mature" placeholder="min_days_to_mature" value="0">
-        <input type="int" name="min_ROI" placeholder="min_ROI" value="30">
+        <input type="int" name="ar_min_Return" placeholder="min_Return" value="0">
+        <input type="int" name="ar_min_days_to_mature" placeholder="min_days_to_mature" value="0">
+        <input type="int" name="ar_min_ROI" placeholder="min_ROI" value="30">
         <input type="submit" value="arbitrage">
+    </form>
+
+    <form method="POST" action="/covered_call" enctype="multipart/form-data">
+        <input type="int" name="cc_max_risk" placeholder="max_risk" value="5">
+        <input type="int" name="cc_min_days_to_mature" placeholder="min_days_to_mature" value="0">
+        <input type="int" name="cc_min_ROI" placeholder="min_ROI" value="50">
+        <input type="submit" value="covered_call">
     </form>
 
 

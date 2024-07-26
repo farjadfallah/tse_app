@@ -31,6 +31,7 @@ class Covered_Call_filter(Filter):
         print("minimum confidence interval=", self.min_confidence_interval)
         print("minimum days to mature= ", self.min_day_to_mature)
         print("-------------------------------------------")
+        results = []
         for call_op in call_options_list:
             underlying_asset = call_op.get_underlying_asset()
             total_cost = self.__calculate_total_cost(call_op, underlying_asset)
@@ -40,8 +41,11 @@ class Covered_Call_filter(Filter):
             confidence_interval = self.__calculte_confidence_interval(call_op, underlying_asset)
 
             if(confidence_interval > self.min_confidence_interval and roi > self.min_roi and call_op.get_days_till_maturity() > self.min_day_to_mature  ):
+                the_result = {"max_risk": round(confidence_interval, 1),"mature": call_op.get_days_till_maturity(), "roi":round(roi,1), "call_name": str(call_op),  "call_price":call_op.get_cost_to_sell( False, self.sarkhat_or_latest), "ua_price":round(underlying_asset.get_cost(self.sarkhat_or_latest), 0)}
+                results.append(the_result)
                 print(f'{str(call_op):<15}','roi=',  round(roi, 1), '    confidence interval = ', round(confidence_interval, 1), '  ua price = ', underlying_asset.get_cost(self.sarkhat_or_latest), '      optoins price = ', call_op.get_cost_to_sell( False, self.sarkhat_or_latest))
         print("===========================================")
+        return results
 
             
 

@@ -4,7 +4,7 @@
 <html>
 
 <head>
-    <header>arbitrage</header>
+    <header>covered_call</header>
     <style>
         table {
             border-collapse: collapse;
@@ -18,7 +18,7 @@
         }
 
         th {
-            background-color: #e4e050;
+            background-color: #e450c4;
         }
 
         tr:nth-child(even) {
@@ -28,40 +28,36 @@
 </head>
 
 <body>
-    <p>the results of the arbitrage filter</p>
-    <form method="POST" action="/arbitrage" enctype="multipart/form-data">
-        <input type="int" name="ar_min_Return" placeholder="min_Return" value="{{min_return}}">
-        <input type="int" name="ar_min_days_to_mature" placeholder="min_days_to_mature" value="{{min_days_to_mature}}">
-        <input type="int" name="ar_min_ROI" placeholder="min_ROI" value="{{min_ROI}}">
-        <input type="submit" value="arbitrage">
+    <p>the results of the covered call filter</p>
+    <form method="POST" action="/covered_call" enctype="multipart/form-data">
+        <input type="int" name="cc_max_risk" placeholder="max_risk" value="{{max_risk}}">
+        <input type="int" name="cc_min_days_to_mature" placeholder="min_days_to_mature" value="{{min_days_to_mature}}">
+        <input type="int" name="cc_min_ROI" placeholder="min_ROI" value="{{min_ROI}}">
+        <input type="submit" value="covered_call">
     </form>
 
     <p>
         current config:
     </p>
-    <p>min retrun = {{min_return}}</p>
+    <p>max risk = {{max_risk}}</p>
     <p>min days to mature = {{min_days_to_mature}}</p>
     <p>min ROI = {{min_ROI}}</p>
     <table>
         <tr>
-            <th>profit</th>
+            <th>max risk</th>
             <th>roi</th>
             <th>days to mature</th>
             <th>call option</th>
             <th>call price</th>
-            <th>put option</th>
-            <th>put price</th>
             <th>ua price</th>
         </tr>
         {% for result in results: %}
         <tr>
-            <td>{{result["profit"]}}</td>
+            <td>{{result["max_risk"]}}</td>
             <td>{{result["roi"]}}</td>
             <td>{{result["mature"]}}</td>
             <td>{{result["call_name"]}}</td>
             <td>{{result["call_price"]}}</td>
-            <td>{{result["put_name"]}}</td>
-            <td>{{result["put_price"]}}</td>
             <td>{{result["ua_price"]}}</td>
         </tr>
         {%endfor%}

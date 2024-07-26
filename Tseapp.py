@@ -38,3 +38,10 @@ class Tseapp:
         self.data_provider.get_info(self.market_info)
         results = self.market_info.apply_filter(the_filter)
         return results
+
+    def get_covered_call_filter(self, max_risk,min_days_to_mature,min_ROI):
+        the_filter = Covered_Call_filter(min_ROI, max_risk, min_days_to_mature)
+        self.market_info.reset_informations()
+        self.data_provider.get_info(self.market_info)
+        results = self.market_info.apply_filter(the_filter)
+        return results
