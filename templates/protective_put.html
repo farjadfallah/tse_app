@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+
+<html>
+
+<head>
+    <header>covered_call</header>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            text-align: center;
+            padding: 8px;
+        }
+
+        th {
+            background-color: rgb(61, 233, 158)
+        }
+
+        tr:nth-child(even) {
+            background-color: #889797;
+        }
+    </style>
+</head>
+
+<body>
+    <p>the results of the protective put</p>
+    <form method="POST" action="/protective_put" enctype="multipart/form-data">
+        <input type="int" name="pp_min_dif" placeholder="min_diff" value="{{min_dif}}">
+        <input type="int" name="pp_max_dif" placeholder="max_risk" value="{{max_dif}}">
+        <input type="int" name="pp_min_days_to_mature" placeholder="min_days_to_mature" value="{{min_days_to_mature}}">
+        <input type="int" name="pp_min_ROI" placeholder="min_ROI" value="{{min_ROI}}">
+        <input type="submit" value="protective_put">
+    </form>
+
+    <p>
+        current config:
+    </p>
+    <p>min dif = {{min_risk}}</p>
+    <p>max dif = {{max_risk}}</p>
+    <p>min days to mature = {{min_days_to_mature}}</p>
+    <p>min ROI = {{min_ROI}}</p>
+    <table>
+        <tr>
+
+            <th>differnce</th>
+            <th>roi</th>
+            <th>days to mature</th>
+            <th>put option</th>
+            <th>put price</th>
+            <th>ua price</th>
+        </tr>
+        {% for result in results: %}
+        <tr>
+            <td>{{result["difference"]}}</td>
+            <td>{{result["roi"]}}</td>
+            <td>{{result["mature"]}}</td>
+            <td>{{result["put_name"]}}</td>
+            <td>{{result["put_price"]}}</td>
+            <td>{{result["ua_price"]}}</td>
+        </tr>
+        {%endfor%}
+    </table>
+</body>
+
+</html>

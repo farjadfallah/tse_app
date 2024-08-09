@@ -21,6 +21,13 @@
         <input type="submit" value="covered_call">
     </form>
 
+    <form method="POST" action="/protective_put" enctype="multipart/form-data">
+        <input type="int" name="pp_min_dif" placeholder="min_diff" value="-10">
+        <input type="int" name="pp_max_dif" placeholder="max_risk" value="10">
+        <input type="int" name="pp_min_days_to_mature" placeholder="min_days_to_mature" value="0">
+        <input type="int" name="pp_min_ROI" placeholder="min_ROI" value="20">
+        <input type="submit" value="protective_put">
+    </form>
 
 </body>
 
