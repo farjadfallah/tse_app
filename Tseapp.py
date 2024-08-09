@@ -14,9 +14,12 @@ class Tseapp:
         self.cc_filter_med = Covered_Call_filter(50, 2, 5)
         self.arbirage_filter = Aribitrage_Filter(0, -1, 30)
         self.data_provider.get_info(self.market_info)
+        self.protective_put = Protective_Put_Filter(-10,10,0,-10)
 
 
+        self.market_info.apply_filter(self.protective_put)
 
+        
     def get_arbitrage_filter(self, min_return, min_days_to_mature, min_roi):
         the_filter = Aribitrage_Filter(min_return, min_days_to_mature, min_roi)
         self.market_info.reset_informations()

@@ -117,3 +117,53 @@ class Aribitrage_Filter(Filter):
         return underlying_asset.get_value_at_price(strike) - call_op.get_value_at_price(strike) + put_op.get_value_at_price(strike)
     
 
+class Protective_Put_Filter(Filter):
+    def __init__(self, _min_diff, _max_diff, _min_days_to_mature, _min_roi, _sarkhat_or_latest = 'sarkhat'):
+        super().__init__()
+        self.min_diff = _min_diff
+        self.max_diff = _max_diff
+        self.min_days_to_mature = _min_days_to_mature
+        self.min_roi = _min_roi
+        self.sarkhat_or_latest = _sarkhat_or_latest
+    
+    def apply_filter(self, stocks_list, call_options_list, put_options_list):
+        print("===========================================")
+        print("Protective put filter result for these specs:")
+        print("minimum ROI=", self.min_roi)
+        print("min and max differnce:", self.min_diff, self.max_diff)
+        print("minimum days to mature= ", self.min_days_to_mature)
+        print("-------------------------------------------")
+        results = []
+        for put_op in put_options_list:
+            underlying_asset = put_op.get_underlying_asset()
+
+            total_cost = self.__calculate_total_cost(put_op, underlying_asset)
+            if(total_cost == None):
+                continue
+            min_expected_return = self.__calculate_expected_return(put_op, underlying_asset)
+            profit_percentage = (min_expected_return / total_cost - 1) * 100
+            roi = self.get_roi(profit_percentage, put_op.get_days_till_maturity())
+
+            difference = self.__calculate_difference_to_strike(put_op, underlying_asset)
+
+            if(roi >= self.min_roi and difference >= self.min_diff and difference <= self.max_diff  and put_op.get_days_till_maturity() > self.min_days_to_mature):
+                the_result = {"difference": round(profit_percentage, 1),"mature": put_op.get_days_till_maturity(), "roi":round(roi,1), "put_name": str(put_op), "put_price": put_op.get_cost_to_buy(  self.sarkhat_or_latest), "ua_price":round(underlying_asset.get_cost(self.sarkhat_or_latest), 0)}
+                results.append(the_result)
+                print('difference=',  f'{round(difference, 1):<5}','ROi=',f'{round(roi,1):<6}',  'days=',f'{put_op.get_days_till_maturity():<4}', f'{str(put_op):<10} ',f'{put_op.get_cost_to_buy(  self.sarkhat_or_latest):<10}','  ua price = ',f'{round(underlying_asset.get_cost(self.sarkhat_or_latest), 0):<7}')
+        print("===========================================")
+
+        return self.sort_results_by('roi', results)
+
+
+
+    def __calculate_total_cost(self, put_op, underlying_asset):
+        if(put_op.get_cost_to_buy() <=0):
+            return None
+        return underlying_asset.get_cost(self.sarkhat_or_latest) + put_op.get_cost_to_buy()
+        
+    def __calculate_expected_return(self, put_op, underlying_asset):
+        strike = put_op.get_strike_price()
+        return underlying_asset.get_value_at_price(strike) + put_op.get_value_at_price(strike)
+    
+    def __calculate_difference_to_strike(self, put_op, underlyting_asset):
+        return (put_op.get_strike_price() / underlyting_asset.get_cost(self.sarkhat_or_latest) - 1) * 100
