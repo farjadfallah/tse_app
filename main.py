@@ -37,6 +37,7 @@ def covered_call():
     
     return render_template('covered_call.html', results=results, max_risk = max_risk,  min_days_to_mature = min_days_to_mature,min_ROI =min_ROI) 
 if __name__ == '__main__':
-    app.run(host='192.168.1.50')
+    # app.run(host='192.168.1.53')
+    app.run()
     
     
