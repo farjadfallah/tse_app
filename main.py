@@ -1,5 +1,6 @@
 from Tseapp import Tseapp
 from flask import Flask, redirect, url_for, render_template, request
+import unicodedata
 
 app = Flask(__name__)
 
@@ -56,11 +57,26 @@ def protective_put():
 def positions():
     information = None
     
-    print("ewwwwww")
     results = the_app.get_current_positions_State()
     
     return render_template('positions.html', results=results) 
-    # return render_template('index.html') 
+
+
+@app.route("/add_covered_call_position", methods=["POST"])
+def add_covered_call_position():
+    information = None
+    if request.method == "POST":
+        information = request.form
+    volume = float(information["cc_volume"]) if information != None else 0
+    call_price = int(information["cc_call_price"]) if information != None else 0
+    call_name=  str(information["cc_call_name"]) if information != None else 0
+
+    ua_price = float(information["cc_ua_price"]) if information != None else 0
+    days_to_mature = int(information["cc_days_to_mature"]) if information != None else 0
+    the_app.add_covered_Call_position(call_name, volume, ua_price, call_price, days_to_mature)
+    return redirect("/positions")
+
+app.config['JSON_AS_ASCII'] = True
 
 if __name__ == '__main__':
     # app.run(host='192.168.1.53')

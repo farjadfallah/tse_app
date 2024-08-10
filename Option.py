@@ -1,5 +1,5 @@
 class Option:
-    def __init__(self, _ticker, _strike, _u_asset, _maturity_date, _days_till_maturity, _best_kharid, _best_foroosh, _volume, _last_price):
+    def __init__(self, _op_code, _ticker, _strike, _u_asset, _maturity_date, _days_till_maturity, _best_kharid, _best_foroosh, _volume, _last_price):
         self.ticker = _ticker
         self.strike = _strike
         self.u_asset = _u_asset
@@ -12,6 +12,7 @@ class Option:
         self.option_size = 1000
         self.vajh_tazmin = 0
         self.similar_option = None
+        self.code = _op_code
 
     def get_cost_to_buy(self, sarkhat_or_latest = 'sarkhat'):
         buy_price =  self.best_foroosh if sarkhat_or_latest == 'sarkhat' else self.last_price
@@ -32,6 +33,12 @@ class Option:
             return True
         return False
     
+
+    def check_code(self, code):
+        if(code == self.code):
+            return True
+        return False
+
     def get_strike_price(self):
         return self.strike
 

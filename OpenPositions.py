@@ -15,7 +15,6 @@ class OpenPostionsRecords:
         self.covered_calls_list.append(covered_call)
 
     def get_current_state(self):
-        print("meeeeeeeeeeeeeeeeeeeeeeeee")
         final_result =[[],[],[]]
         for covered_call in self.covered_calls_list:
             final_result[0].append(covered_call.get_current_state())
@@ -55,7 +54,6 @@ class Covered_Call_Position_Record(Record):
 
        
         result = self.__make_result(new_untill_loss, new_roi, taken_profit, taken_ROI)
-        print(result)
         return result
         
 

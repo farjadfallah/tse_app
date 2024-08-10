@@ -26,7 +26,17 @@ class MarketInfo:
                 return option
         
         return None
+    
+    def find_option_with_code(self, code):
+        for option in self.call_options_list:
+            if(option.check_code(code)):
+                return option
             
+        for option in self.put_options_list:
+            if(option.check_code(code)):
+                return option
+        
+        return None
     def add_stock(self, stock):
         self.stocks_list.append(stock)
 

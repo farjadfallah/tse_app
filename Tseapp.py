@@ -49,4 +49,11 @@ class Tseapp:
 
 
     def get_current_positions_State(self):
+        self.market_info.reset_informations()
+        self.data_provider.get_info(self.market_info)
         return self.open_postion_record.get_current_state()
+    
+    def add_covered_Call_position(self, call_name, volume, ua_price, call_price, days_to_mature):
+        self.market_info.reset_informations()
+        self.data_provider.get_info(self.market_info)
+        self.open_postion_record.add_covered_call(Covered_Call_Position_Record(self.market_info.find_option_with_name(call_name),call_price,ua_price,volume,days_to_mature))

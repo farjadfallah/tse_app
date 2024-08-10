@@ -28,7 +28,15 @@
 </head>
 
 <body>
-
+    <p>add position</p>
+    <form method="POST" action="/add_covered_call_position" enctype="multipart/form-data">
+        <input type="str" name="cc_call_name" placeholder="call_name">
+        <input type="int" name="cc_volume" placeholder="volume">
+        <input type="int" name="cc_ua_price" placeholder="ua_price">
+        <input type="int" name="cc_call_price" placeholder="call_price">
+        <input type="int" name="cc_days_to_mature" placeholder="days_to_mature">
+        <input type="submit" value="add_covered_call">
+    </form>
     <p>current positions:</p>
     <p>covered calls:</p>
     <table>

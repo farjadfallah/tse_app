@@ -7,7 +7,7 @@ from khayyam import  JalaliDatetime
 from Stock import Stock
 from CallOption import CallOption
 from PutOption import PutOption
-
+import unicodedata
 
 class DataProvider:
     def __init__(self):
@@ -55,8 +55,8 @@ class DataProvider:
 
     def __get_info_from_raw_file_stock(self, file, market_info, spread):
         for i in range(len(file)):
-            sh_ticker =  str(file[i].split('"lva":"')[1].split('\",\"')[0])
-            sh_full_name = str(file[i].split('"lvc":"')[1].split('\",\"')[0])
+            sh_ticker =  unicodedata.normalize('NFC', str(file[i].split('"lva":"')[1].split('\",\"')[0]))
+            sh_full_name = unicodedata.normalize('NFC', str(file[i].split('"lvc":"')[1].split('\",\"')[0]))
 
             sh_sarkhat_kharid = int(file[i].split('"pmd":')[1].split(',')[0][:-2])
             sh_sarkhat_foroosh = int(file[i].split('"pmo":')[1].split(',')[0][:-2])
@@ -90,11 +90,10 @@ class DataProvider:
         return op_days_till_mature, then
 
     def __decode_option_info_from_full_name(self, op_type, op_details_str, market_info):
-        
         if(op_type == "call"):
-            op_underlying_asset_name = str(op_details_str.split('خ ')[1].split('-')[0])
+            op_underlying_asset_name =  unicodedata.normalize('NFC',str(op_details_str.split('خ ')[1].split('-')[0]))
         if(op_type == "put"):
-            op_underlying_asset_name = str(op_details_str.split('ف ')[1].split('-')[0])
+            op_underlying_asset_name =  unicodedata.normalize('NFC',str(op_details_str.split('ف ')[1].split('-')[0]))
 
         op_strike_price = int(op_details_str.split('-')[1].split('-')[0])
         op_strike_date = str(op_details_str.split('-')[2].split("\"")[0])
@@ -117,7 +116,8 @@ class DataProvider:
     def __get_info_from_raw_file_option(self, file, market_info):
         
         for i in range(len(file)):
-            op_name =  str(file[i].split('"lva":"')[1].split('\",\"')[0])
+
+            op_name =  unicodedata.normalize('NFC', str(file[i].split('"lva":"')[1].split('\",\"')[0]))
             op_type = self.__get_option_type(op_name)
             if(op_type == None):
                 continue
@@ -125,12 +125,12 @@ class DataProvider:
             op_details_str = str(file[i].split('"lvc":')[1].split(',')[0])
             underlying_asset, op_days_till_mature, op_strike_price, then = self.__decode_option_info_from_full_name(op_type, op_details_str, market_info)
             op_sarkhat_kharid, op_sarkhat_foroosh, op_last_price, op_hajm = self.__get_option_pricing_info(file[i])
-
+            op_code = int(file[i].split('"insCode":"')[1].split('",')[0])
             if(underlying_asset == None):
                 print("couldn't find underlying asset with name", op_name)
                 continue
 
             if(op_type == 'call'):
-                market_info.add_call_option(CallOption(op_name, op_strike_price, underlying_asset, then, op_days_till_mature, op_sarkhat_kharid, op_sarkhat_foroosh, op_hajm, op_last_price))
+                market_info.add_call_option(CallOption(op_code, op_name, op_strike_price, underlying_asset, then, op_days_till_mature, op_sarkhat_kharid, op_sarkhat_foroosh, op_hajm, op_last_price))
             elif(op_type == 'put'):
-                market_info.add_put_option(PutOption(op_name, op_strike_price, underlying_asset, then, op_days_till_mature, op_sarkhat_kharid, op_sarkhat_foroosh, op_hajm, op_last_price))
+                market_info.add_put_option(PutOption(op_code, op_name, op_strike_price, underlying_asset, then, op_days_till_mature, op_sarkhat_kharid, op_sarkhat_foroosh, op_hajm, op_last_price))
