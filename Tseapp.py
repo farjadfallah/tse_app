@@ -3,6 +3,7 @@ from DataProvider import DataProvider
 from MarketInfo import MarketInfo
 from Portfolio import Portfolio
 from Filter import *
+from OpenPositions import *
 class Tseapp:
     def __init__(self):
         self.data_provider = DataProvider()
@@ -15,7 +16,10 @@ class Tseapp:
         self.arbirage_filter = Aribitrage_Filter(0, -1, 30)
         self.data_provider.get_info(self.market_info)
         self.protective_put = Protective_Put_Filter(-10,10,0,-10)
-
+        self.open_postion_record = OpenPostionsRecords()
+        self.open_postion_record.add_covered_call(Covered_Call_Position_Record(self.market_info.find_option_with_name('ضهرم7026'),3996,19955,10000,94))
+        self.open_postion_record.add_covered_call(Covered_Call_Position_Record(self.market_info.find_option_with_name('ضهرم7025'),2250,16710,6000,77))
+        self.open_postion_record.get_current_state()
 
         self.market_info.apply_filter(self.protective_put)
 

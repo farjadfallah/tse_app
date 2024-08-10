@@ -51,6 +51,9 @@ def protective_put():
     
     return render_template('protective_put.html', results=results, min_dif = min_dif, max_dif = max_dif,  min_days_to_mature = min_days_to_mature,min_ROI =min_ROI) 
 
+
+
+
 if __name__ == '__main__':
     # app.run(host='192.168.1.53')
     app.run()
