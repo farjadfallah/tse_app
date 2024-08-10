@@ -16,9 +16,7 @@ class Tseapp:
         self.arbirage_filter = Aribitrage_Filter(0, -1, 30)
         self.data_provider.get_info(self.market_info)
         self.protective_put = Protective_Put_Filter(-10,10,0,-10)
-        self.open_postion_record = OpenPostionsRecords()
-        self.open_postion_record.add_covered_call(Covered_Call_Position_Record(self.market_info.find_option_with_name('ضهرم7026'),3996,19955,10000,94))
-        self.open_postion_record.add_covered_call(Covered_Call_Position_Record(self.market_info.find_option_with_name('ضهرم7025'),2250,16710,6000,77))
+        self.open_postion_record = OpenPostionsRecords(self.market_info)
         
 
         self.market_info.apply_filter(self.protective_put)
@@ -56,4 +54,4 @@ class Tseapp:
     def add_covered_Call_position(self, call_name, volume, ua_price, call_price, days_to_mature):
         self.market_info.reset_informations()
         self.data_provider.get_info(self.market_info)
-        self.open_postion_record.add_covered_call(Covered_Call_Position_Record(self.market_info.find_option_with_name(call_name),call_price,ua_price,volume,days_to_mature))
+        self.open_postion_record.add_covered_call(Covered_Call_Position_Record(self.market_info,call_name,call_price,ua_price,volume,days_to_mature))

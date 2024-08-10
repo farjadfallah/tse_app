@@ -3,10 +3,11 @@
 
 class OpenPostionsRecords:
 
-    def __init__(self):
+    def __init__(self, _market_info):
         self.covered_calls_list = []
         self.arbitrages_list = []
         self.protective_puts_list =[]
+        self.market_info = _market_info
 
    
     
@@ -31,10 +32,12 @@ class Record():
      
 class Covered_Call_Position_Record(Record):
 
-    def __init__(self, _call_op, call_price, ua_price, _volume, _days_to_mature_when_enter ):
+    def __init__(self, market_info, _call_name, call_price, ua_price, _volume, _days_to_mature_when_enter ):
         super().__init__()
-        self.call_op = _call_op
-        self.ua_asset = _call_op.get_underlying_asset()
+        self.call_name = _call_name
+        self.market_info = market_info
+        self.call_op = self.market_info.find_option_with_name(_call_name)
+        self.ua_asset = self.call_op.get_underlying_asset()
         self.call_entry_price = call_price
         self.ua_entry_price = ua_price
         self.volume = _volume
@@ -47,6 +50,7 @@ class Covered_Call_Position_Record(Record):
     
 
     def get_current_state(self):
+        self.call_op = self.market_info.find_option_with_name(self.call_name)
         new_untill_loss = self.__calculte_confidence_interval(self.ua_asset.get_cost())
         new_roi = self.__calculate__ROI(self.ua_asset.get_cost(), self.call_op.get_cost_to_buy(), self.call_op.get_days_till_maturity())
         taken_profit = self.__get_taken_profit()
@@ -65,7 +69,7 @@ class Covered_Call_Position_Record(Record):
         the_result["ex_till_loss"] = round(self.expected_untill_loss, 1)
         the_result["ex_ROI"] = round(self.expected_ROI, 1)
         the_result["days_to_mature"] = self.call_op.get_days_till_maturity()
-        the_result["ua_price"] = self.ua_asset.get_cost()
+        the_result["ua_price"] = round(self.ua_asset.get_cost())
         the_result["call_price"] = self.call_op.get_cost_to_buy()
         the_result["till_loss"] = round(new_untill_loss, 1)
         the_result["taken_profit"] = round(taken_profit, 1)
