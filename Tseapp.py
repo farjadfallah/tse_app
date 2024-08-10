@@ -19,7 +19,7 @@ class Tseapp:
         self.open_postion_record = OpenPostionsRecords()
         self.open_postion_record.add_covered_call(Covered_Call_Position_Record(self.market_info.find_option_with_name('ضهرم7026'),3996,19955,10000,94))
         self.open_postion_record.add_covered_call(Covered_Call_Position_Record(self.market_info.find_option_with_name('ضهرم7025'),2250,16710,6000,77))
-        self.open_postion_record.get_current_state()
+        
 
         self.market_info.apply_filter(self.protective_put)
 
@@ -46,3 +46,7 @@ class Tseapp:
         self.data_provider.get_info(self.market_info)
         results = self.market_info.apply_filter(the_filter)
         return results
+
+
+    def get_current_positions_State(self):
+        return self.open_postion_record.get_current_state()

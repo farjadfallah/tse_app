@@ -52,7 +52,15 @@ def protective_put():
     return render_template('protective_put.html', results=results, min_dif = min_dif, max_dif = max_dif,  min_days_to_mature = min_days_to_mature,min_ROI =min_ROI) 
 
 
-
+@app.route("/positions")
+def positions():
+    information = None
+    
+    print("ewwwwww")
+    results = the_app.get_current_positions_State()
+    
+    return render_template('positions.html', results=results) 
+    # return render_template('index.html') 
 
 if __name__ == '__main__':
     # app.run(host='192.168.1.53')

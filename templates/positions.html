@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+
+<html>
+
+<head>
+    <header>positions</header>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            text-align: center;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #e450c4;
+        }
+
+        tr:nth-child(even) {
+            background-color: #cbf5f5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <p>current positions:</p>
+    <p>covered calls:</p>
+    <table>
+        <tr>
+            <th>call name</th>
+            <th>volume</th>
+            <th>ex days mature</th>
+            <th>ex till loss</th>
+            <th>ex ROI</th>
+            <th>days mature</th>
+            <th>ua price</th>
+            <th>call price</th>
+            <th>taken profit</th>
+            <th>taken ROI</th>
+            <th>till loss</th>
+            <th>ROI</th>
+        </tr>
+        {% for result in results[0]: %}
+        <tr>
+            <td>{{result["call_name"]}}</td>
+            <td>{{result["volume"]}}</td>
+            <td>{{result["ex_days_to_mature"]}}</td>
+            <td>{{result["ex_till_loss"]}}</td>
+            <td>{{result["ex_ROI"]}}</td>
+            <td>{{result["days_to_mature"]}}</td>
+            <td>{{result["ua_price"]}}</td>
+            <td>{{result["call_price"]}}</td>
+            <td>{{result["taken_profit"]}}</td>
+            <td>{{result["taken_ROI"]}}</td>
+            <td>{{result["till_loss"]}}</td>
+            <td>{{result["new_ROI"]}}</td>
+        </tr>
+        {%endfor%}
+    </table>
+</body>
+
+</html>
