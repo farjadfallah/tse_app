@@ -31,6 +31,9 @@ class OpenPostionsRecords:
         df.to_csv('my_portfolio.csv', index=False, encoding="utf8")
     
     def load_file(self):
+        self.covered_calls_list = []
+        self.arbitrages_list = []
+        self.protective_puts_list =[]
         df = pd.read_csv('my_portfolio.csv', encoding="utf8")
         for index, row in df.iterrows():
             new_covered_Call =Covered_Call_Position_Record(self.market_info, row['call_name'],row['call_price'],row['ua_asset_price'],row['volume'],row['days_to_mature'] )
