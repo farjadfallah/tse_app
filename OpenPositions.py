@@ -1,5 +1,5 @@
 
-
+import pandas as pd
 
 class OpenPostionsRecords:
 
@@ -21,8 +21,15 @@ class OpenPostionsRecords:
             final_result[0].append(covered_call.get_current_state())
         print(final_result)
         return final_result
+    
+    def save_file(self):
+        the_list = []
+        for record in self.covered_calls_list:
+            the_list.append(record.save_file_output())
 
-
+        df = pd.DataFrame(the_list, columns=['call_name', 'volume', 'ua_asset_price', 'call_price', 'days_to_mature'])
+        df.to_csv('my_portfolio.csv', index=False, encoding="utf8")
+    
 
 class Record():
      def get_roi(self, non_roi_return, duration):
@@ -61,7 +68,10 @@ class Covered_Call_Position_Record(Record):
         result = self.__make_result(new_untill_loss, new_roi, taken_profit, taken_ROI)
         return result
         
-
+    def save_file_output(self):
+        the_list = [self.call_name, self.volume, self.ua_entry_price, self.call_entry_price, self.days_to_mature_when_enter]
+        return the_list
+        
 
     def __make_result(self, new_untill_loss, new_roi, taken_profit, taken_ROI):
         the_result = {"call_name": str(self.call_op)}

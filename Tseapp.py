@@ -55,3 +55,6 @@ class Tseapp:
         self.market_info.reset_informations()
         self.data_provider.get_info(self.market_info)
         self.open_postion_record.add_covered_call(Covered_Call_Position_Record(self.market_info,call_name,call_price,ua_price,volume,days_to_mature))
+
+    def save_portfolio(self):
+        self.open_postion_record.save_file()

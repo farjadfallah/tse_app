@@ -76,6 +76,12 @@ def add_covered_call_position():
     the_app.add_covered_Call_position(call_name, volume, ua_price, call_price, days_to_mature)
     return redirect("/positions")
 
+@app.route("/save_portfolio", methods=["POST"])
+def save_portfolio():
+    the_app.save_portfolio()
+    return redirect("/positions")
+
+
 app.config['JSON_AS_ASCII'] = True
 
 if __name__ == '__main__':
