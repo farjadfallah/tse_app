@@ -51,10 +51,11 @@ class Covered_Call_Position_Record(Record):
 
     def get_current_state(self):
         self.call_op = self.market_info.find_option_with_name(self.call_name)
+        self.ua_asset = self.call_op.get_underlying_asset()
         new_untill_loss = self.__calculte_confidence_interval(self.ua_asset.get_cost())
         new_roi = self.__calculate__ROI(self.ua_asset.get_cost(), self.call_op.get_cost_to_buy(), self.call_op.get_days_till_maturity())
         taken_profit = self.__get_taken_profit()
-        taken_ROI = self.get_roi(taken_profit, self.call_op.get_days_till_maturity())
+        taken_ROI = self.get_roi(taken_profit, self.days_to_mature_when_enter-self.call_op.get_days_till_maturity())
 
        
         result = self.__make_result(new_untill_loss, new_roi, taken_profit, taken_ROI)

@@ -19,7 +19,7 @@ class Tseapp:
         self.open_postion_record = OpenPostionsRecords(self.market_info)
         
 
-        self.market_info.apply_filter(self.protective_put)
+        # self.market_info.apply_filter(self.protective_put)
 
 
     def get_arbitrage_filter(self, min_return, min_days_to_mature, min_roi):
