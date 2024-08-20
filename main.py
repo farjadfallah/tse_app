@@ -81,6 +81,10 @@ def save_portfolio():
     the_app.save_portfolio()
     return redirect("/positions")
 
+@app.route("/load_portfolio", methods=["POST"])
+def load_portfolio():
+    the_app.load_portfolio()
+    return redirect("/positions")
 
 app.config['JSON_AS_ASCII'] = True
 

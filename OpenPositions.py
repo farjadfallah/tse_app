@@ -30,7 +30,14 @@ class OpenPostionsRecords:
         df = pd.DataFrame(the_list, columns=['call_name', 'volume', 'ua_asset_price', 'call_price', 'days_to_mature'])
         df.to_csv('my_portfolio.csv', index=False, encoding="utf8")
     
+    def load_file(self):
+        df = pd.read_csv('my_portfolio.csv', encoding="utf8")
+        for index, row in df.iterrows():
+            new_covered_Call =Covered_Call_Position_Record(self.market_info, row['call_name'],row['call_price'],row['ua_asset_price'],row['volume'],row['days_to_mature'] )
+            self.add_covered_call(new_covered_Call)
+           
 
+        
 class Record():
      def get_roi(self, non_roi_return, duration):
         if(duration+1 <= 0 ):

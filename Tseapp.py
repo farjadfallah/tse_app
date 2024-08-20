@@ -58,3 +58,7 @@ class Tseapp:
 
     def save_portfolio(self):
         self.open_postion_record.save_file()
+
+
+    def load_portfolio(self):
+        self.open_postion_record.load_file()
