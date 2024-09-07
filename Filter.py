@@ -41,17 +41,23 @@ class Covered_Call_filter(Filter):
         print("-------------------------------------------")
         results = []
         for call_op in call_options_list:
-            underlying_asset = call_op.get_underlying_asset()
-            total_cost = self.__calculate_total_cost(call_op, underlying_asset)
-            expected_return = self.__calculate_expected_return(call_op, underlying_asset)
-            profit_percentage = (expected_return / total_cost - 1) * 100
-            roi = self.get_roi(profit_percentage, call_op.get_days_till_maturity())
-            confidence_interval = self.__calculte_confidence_interval(call_op, underlying_asset)
+            try:
+                underlying_asset = call_op.get_underlying_asset()
+                total_cost = self.__calculate_total_cost(call_op, underlying_asset)
+                expected_return = self.__calculate_expected_return(call_op, underlying_asset)
+                if(total_cost == 0):
+                    continue
+                profit_percentage = (expected_return / total_cost - 1) * 100
+                roi = self.get_roi(profit_percentage, call_op.get_days_till_maturity())
+                confidence_interval = self.__calculte_confidence_interval(call_op, underlying_asset)
 
-            if(confidence_interval > self.min_confidence_interval and roi > self.min_roi and call_op.get_days_till_maturity() > self.min_day_to_mature  ):
-                the_result = {"max_risk": round(confidence_interval, 1),"mature": call_op.get_days_till_maturity(), "roi":round(roi,1), "call_name": str(call_op),  "call_price":call_op.get_cost_to_sell( False, self.sarkhat_or_latest), "ua_price":round(underlying_asset.get_cost(self.sarkhat_or_latest), 0)}
-                results.append(the_result)
-                print(f'{str(call_op):<15}','roi=',  round(roi, 1), '    confidence interval = ', round(confidence_interval, 1), '  ua price = ', underlying_asset.get_cost(self.sarkhat_or_latest), '      optoins price = ', call_op.get_cost_to_sell( False, self.sarkhat_or_latest))
+                if(confidence_interval > self.min_confidence_interval and roi > self.min_roi and call_op.get_days_till_maturity() > self.min_day_to_mature  ):
+                    the_result = {"max_risk": round(confidence_interval, 1),"mature": call_op.get_days_till_maturity(), "roi":round(roi,1), "call_name": str(call_op),  "call_price":call_op.get_cost_to_sell( False, self.sarkhat_or_latest), "ua_price":round(underlying_asset.get_cost(self.sarkhat_or_latest), 0)}
+                    results.append(the_result)
+                    print(f'{str(call_op):<15}','roi=',  round(roi, 1), '    confidence interval = ', round(confidence_interval, 1), '  ua price = ', underlying_asset.get_cost(self.sarkhat_or_latest), '      optoins price = ', call_op.get_cost_to_sell( False, self.sarkhat_or_latest))
+        
+            except  OverflowError as err:
+                print(err)
         print("===========================================")
         return self.sort_results_by('roi', results)
 

@@ -62,3 +62,6 @@ class Tseapp:
 
     def load_portfolio(self):
         self.open_postion_record.load_file()
+
+    def get_total_portfolio_value(self):
+        return self.open_postion_record.get_current_portfolio_value()

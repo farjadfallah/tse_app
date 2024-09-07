@@ -58,8 +58,8 @@ def positions():
     information = None
     
     results = the_app.get_current_positions_State()
-    
-    return render_template('positions.html', results=results) 
+    total_value  = the_app.get_total_portfolio_value()
+    return render_template('positions.html', results=results, total_value = total_value) 
 
 
 @app.route("/add_covered_call_position", methods=["POST"])

@@ -40,6 +40,12 @@ class OpenPostionsRecords:
             self.add_covered_call(new_covered_Call)
            
 
+    def get_current_portfolio_value(self):
+        total_value = 0
+        for record in self.covered_calls_list:
+            total_value += record.get_total_value()
+        
+        return total_value
         
 class Record():
      def get_roi(self, non_roi_return, duration):
@@ -54,13 +60,17 @@ class Covered_Call_Position_Record(Record):
         self.call_name = _call_name
         self.market_info = market_info
         self.call_op = self.market_info.find_option_with_name(_call_name)
-        self.ua_asset = self.call_op.get_underlying_asset()
         self.call_entry_price = call_price
         self.ua_entry_price = ua_price
         self.volume = _volume
+        self.days_to_mature_when_enter = _days_to_mature_when_enter
+        
+        if(self.call_op == None):
+            print("unable to load ", self.call_name)
+            return
+        self.ua_asset = self.call_op.get_underlying_asset()
 
         self.strike_price = self.call_op.get_strike_price()
-        self.days_to_mature_when_enter = _days_to_mature_when_enter
         self.expected_ROI = self.__calculate__ROI(self.ua_entry_price, self.call_entry_price, self.days_to_mature_when_enter)
         self.expected_untill_loss = self.__calculte_confidence_interval(self.ua_entry_price)
 
@@ -68,11 +78,14 @@ class Covered_Call_Position_Record(Record):
 
     def get_current_state(self):
         self.call_op = self.market_info.find_option_with_name(self.call_name)
+        if(self.call_op == None):
+            result = self.__make_dummy_result()
+            return result 
         self.ua_asset = self.call_op.get_underlying_asset()
-        new_untill_loss = self.__calculte_confidence_interval(self.ua_asset.get_cost())
-        new_roi = self.__calculate__ROI(self.ua_asset.get_cost(), self.call_op.get_cost_to_buy(), self.call_op.get_days_till_maturity())
+        new_untill_loss = self.__calculte_confidence_interval(self.ua_asset.get_cost_to_sell())
+        new_roi = self.__calculate__ROI(self.ua_asset.get_cost_to_sell(), self.call_op.get_cost_to_buy(), self.call_op.get_days_till_maturity())
         taken_profit = self.__get_taken_profit()
-        taken_ROI = self.get_roi(taken_profit, self.days_to_mature_when_enter-self.call_op.get_days_till_maturity())
+        taken_ROI = self.get_roi(taken_profit, self.days_to_mature_when_enter-self.call_op.get_days_till_maturity()+1)
 
        
         result = self.__make_result(new_untill_loss, new_roi, taken_profit, taken_ROI)
@@ -82,15 +95,35 @@ class Covered_Call_Position_Record(Record):
         the_list = [self.call_name, self.volume, self.ua_entry_price, self.call_entry_price, self.days_to_mature_when_enter]
         return the_list
         
+    def get_total_value(self):
+        if(self.call_op == None):
+            return 0
+        return self.volume * ( self.ua_asset.get_cost_to_sell() - self.call_op.get_cost_to_buy())
+    
+
+    def __make_dummy_result(self):
+        the_result = {"call_name": str(self.call_name)}
+        the_result["volume"] = self.volume
+        the_result["ex_days_to_mature"] = self.days_to_mature_when_enter
+        the_result["ex_till_loss"] = 0
+        the_result["ex_ROI"] = 0
+        the_result["days_to_mature"] = 0
+        the_result["ua_price"] = 0
+        the_result["call_price"] = 0
+        the_result["till_loss"] =0
+        the_result["taken_profit"] = 0
+        the_result["taken_ROI"] = 0
+        the_result["new_ROI"] =0
+        return the_result
 
     def __make_result(self, new_untill_loss, new_roi, taken_profit, taken_ROI):
-        the_result = {"call_name": str(self.call_op)}
+        the_result = {"call_name": str(self.call_name)}
         the_result["volume"] = self.volume
         the_result["ex_days_to_mature"] = self.days_to_mature_when_enter
         the_result["ex_till_loss"] = round(self.expected_untill_loss, 1)
         the_result["ex_ROI"] = round(self.expected_ROI, 1)
         the_result["days_to_mature"] = self.call_op.get_days_till_maturity()
-        the_result["ua_price"] = round(self.ua_asset.get_cost())
+        the_result["ua_price"] = round(self.ua_asset.get_cost_to_sell())
         the_result["call_price"] = self.call_op.get_cost_to_buy()
         the_result["till_loss"] = round(new_untill_loss, 1)
         the_result["taken_profit"] = round(taken_profit, 1)
@@ -116,4 +149,4 @@ class Covered_Call_Position_Record(Record):
         return ((self.ua_entry_price- self.call_entry_price)/ ua_asset_price-1) * 100
 
     def __get_taken_profit(self):
-        return ((self.ua_asset.get_cost() -self.call_op.get_cost_to_buy() ) / (self.ua_entry_price - self.call_entry_price) - 1)*100
+        return ((self.ua_asset.get_cost_to_sell() -self.call_op.get_cost_to_buy() ) / (self.ua_entry_price - self.call_entry_price) - 1)*100
