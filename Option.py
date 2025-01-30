@@ -16,6 +16,7 @@ class Option:
 
     def get_cost_to_buy(self, sarkhat_or_latest = 'sarkhat'):
         buy_price =  self.best_foroosh if sarkhat_or_latest == 'sarkhat' else self.last_price
+        
         return buy_price
 
     def get_cost_to_sell(self, needs_vajh_tazmin,  sarkhat_or_latest = 'sarkhat'):

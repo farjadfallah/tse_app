@@ -66,7 +66,10 @@ class DataProvider:
             sh_max_price = int(file[i].split('"pmx":')[1].split(',')[0][:-2])
             sh_hajm = int(file[i].split('"qtj":')[1].split(',')[0][:-2])
 
-            market_info.add_stock(Stock(sh_ticker, sh_full_name, sh_close_price, sh_max_price, sh_min_price, sh_last_price, sh_hajm, sh_sarkhat_kharid, sh_sarkhat_foroosh, spread))
+            sh_astaneh_bala = int(file[i].split('"pMax":')[1].split(',')[0][:-3])
+            sh_astaneh_paein = int(file[i].split('"pMin":')[1].split(',')[0])
+
+            market_info.add_stock(Stock(sh_ticker, sh_full_name, sh_close_price, sh_max_price, sh_min_price, sh_last_price, sh_hajm, sh_sarkhat_kharid, sh_sarkhat_foroosh, spread, sh_astaneh_bala, sh_astaneh_paein))
 
 
 

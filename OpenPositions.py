@@ -82,6 +82,9 @@ class Covered_Call_Position_Record(Record):
             result = self.__make_dummy_result()
             return result 
         self.ua_asset = self.call_op.get_underlying_asset()
+        # tmp_val =self.ua_asset.get_cost_to_sell()
+        # if(tmp_val == 0):
+        #     tmp_val = self.ua_asset.get_cost_to_buy()
         new_untill_loss = self.__calculte_confidence_interval(self.ua_asset.get_cost_to_sell())
         new_roi = self.__calculate__ROI(self.ua_asset.get_cost_to_sell(), self.call_op.get_cost_to_buy(), self.call_op.get_days_till_maturity())
         taken_profit = self.__get_taken_profit()

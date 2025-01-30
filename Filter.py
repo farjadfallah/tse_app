@@ -172,4 +172,4 @@ class Protective_Put_Filter(Filter):
         return underlying_asset.get_value_at_price(strike) + put_op.get_value_at_price(strike)
     
     def __calculate_difference_to_strike(self, put_op, underlyting_asset):
-        return (put_op.get_strike_price() / underlyting_asset.get_cost(self.sarkhat_or_latest) - 1) * 100
+        return (put_op.get_strike_price() / (underlyting_asset.get_cost(self.sarkhat_or_latest)+1) - 1) * 100 
