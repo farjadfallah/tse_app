@@ -25,4 +25,8 @@ class CallOption(Option):
     
     def get_type(self):
             return 'call'
+    
+    def get_cost(self, sarkhat_or_latest = 'sarkhat'):
+        price = min ((self.best_foroosh if sarkhat_or_latest == 'sarkhat' else self.last) , self.astaneh_bala)
+        return (1+self.spread/100) * price
      

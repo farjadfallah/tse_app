@@ -53,6 +53,19 @@ def protective_put():
     return render_template('protective_put.html', results=results, min_dif = min_dif, max_dif = max_dif,  min_days_to_mature = min_days_to_mature,min_ROI =min_ROI) 
 
 
+@app.route("/bull_call_spread", methods=['POST'])
+def bull_call_spread():
+    information = None
+    if request.method == "POST":
+        information = request.form
+    max_risk = float(information["cc_max_risk"]) if information != None else 0
+    min_days_to_mature = int(information["cc_min_days_to_mature"]) if information != None else 0
+    min_ROI = float(information["cc_min_ROI"]) if information != None else 0
+    
+    results = the_app.get_bull_call_spread_filter(max_risk,min_days_to_mature,min_ROI)
+    
+    return render_template('bull_call_spread.html', results=results, max_risk = max_risk,  min_days_to_mature = min_days_to_mature,min_ROI =min_ROI) 
+
 @app.route("/positions")
 def positions():
     information = None

@@ -5,13 +5,17 @@
 class Filter:
     
 
-    def apply_filter(self, stocks_list, call_options_list, put_options_list):
+    def apply_filter(self, stocks_list, call_options_list, put_options_list, option_chains_list):
         pass
 
     def get_roi(self, non_roi_return, duration):
+
         if(duration+1 <= 0 ):
             return -100
-        return (pow((1 + (non_roi_return/100))+ 0.000001, 365/(duration+1)) -1)*100
+        x  = (pow((1 + (non_roi_return/100))+ 0.000001, 365/(duration+1)) -1)*100
+        if isinstance(x, complex):
+             return -100
+        return x
 
     def sort_results_by(self, key, results):
         for i in range(len(results)):
@@ -32,7 +36,7 @@ class Covered_Call_filter(Filter):
         self.sarkhat_or_latest = _sarkhat_or_latest
         self. min_day_to_mature = _min_days_to_mature
 
-    def apply_filter(self, stocks_list, call_options_list, put_options_list):
+    def apply_filter(self, stocks_list, call_options_list, put_options_list, option_chains_list):
         print("===========================================")
         print("covered call filter result for these specs:")
         print("minimum ROI=", self.min_roi)
@@ -83,7 +87,7 @@ class Aribitrage_Filter(Filter):
         self.sarkhat_or_latest = _sarkhat_or_latest
         self.min_roi = _min_roi
     
-    def apply_filter(self, stocks_list, call_options_list, put_options_list):
+    def apply_filter(self, stocks_list, call_options_list, put_options_list, option_chains_list):
         print("===========================================")
         print("Aribitrage filter result for these specs:")
         print("minimum return=", self.min_return)
@@ -132,7 +136,7 @@ class Protective_Put_Filter(Filter):
         self.min_roi = _min_roi
         self.sarkhat_or_latest = _sarkhat_or_latest
     
-    def apply_filter(self, stocks_list, call_options_list, put_options_list):
+    def apply_filter(self, stocks_list, call_options_list, put_options_list, option_chains_list):
         print("===========================================")
         print("Protective put filter result for these specs:")
         print("minimum ROI=", self.min_roi)
@@ -173,3 +177,62 @@ class Protective_Put_Filter(Filter):
     
     def __calculate_difference_to_strike(self, put_op, underlyting_asset):
         return (put_op.get_strike_price() / (underlyting_asset.get_cost(self.sarkhat_or_latest)+1) - 1) * 100 
+    
+
+class Bull_Call_Spread_Filter(Filter):
+    def __init__(self, _min_roi, _min_confidence_interval, _min_days_to_mature, _sarkhat_or_latest = 'sarkhat'):
+        super().__init__()
+        self.min_roi = _min_roi
+        self.min_confidence_interval = _min_confidence_interval
+        self.sarkhat_or_latest = _sarkhat_or_latest
+        self. min_day_to_mature = _min_days_to_mature
+
+    def apply_filter(self, stocks_list, call_options_list, put_options_list, option_chains_list):
+        print("===========================================")
+        print("BUll call spread filter result for these specs:")
+        print("minimum ROI=", self.min_roi)
+        print("minimum confidence interval=", self.min_confidence_interval)
+        print("minimum days to mature= ", self.min_day_to_mature)
+        print("-------------------------------------------")
+        results = []
+        for lower_call in call_options_list:
+            try:
+                the_strike = lower_call.get_strike_price()
+                the_coresponding_chain = option_chains_list[str(lower_call.get_underlying_asset())][lower_call.get_days_till_maturity()] 
+                for higher_call in the_coresponding_chain:
+                    if(higher_call.get_type() == 'call' and higher_call.get_strike_price() <= the_strike ):
+                        continue
+                    
+                    total_cost = self.__calculate_total_cost(higher_call, lower_call)
+                    expected_return = self.__calculate_expected_return(higher_call, lower_call)
+
+                    if(total_cost == 0):
+                        continue
+                    profit_percentage = (expected_return / total_cost - 1) * 100
+                    roi = self.get_roi(profit_percentage, lower_call.get_days_till_maturity())
+
+                    confidence_interval = self.__calculte_confidence_interval(higher_call, lower_call)
+
+                    if(confidence_interval > self.min_confidence_interval and roi > self.min_roi and lower_call.get_days_till_maturity() > self.min_day_to_mature  ):
+                        the_result = {"max_risk": round(confidence_interval, 1),"mature": lower_call.get_days_till_maturity(), "roi":round(roi,1), "higher_call_name": str(higher_call),  "higher_call_price":higher_call.get_cost_to_sell( False, self.sarkhat_or_latest),"lower_call_name": str(lower_call), "lower_call_price":round(lower_call.get_cost_to_buy(self.sarkhat_or_latest), 0)}
+                        results.append(the_result)
+                        print(f'{str(lower_call):<15}', f'{str(higher_call):<15}', 'roi=',  round(roi, 1), '    confidence interval = ', round(confidence_interval, 1), '  lower price = ', lower_call.get_cost_to_buy(self.sarkhat_or_latest), '      higher price = ', higher_call.get_cost_to_sell( False, self.sarkhat_or_latest))
+            except  OverflowError as err:
+                print(err)
+
+        print("===========================================")
+        return self.sort_results_by('roi', results)
+    
+
+            
+
+    def __calculate_total_cost(self, higher_call, lower_call):
+        return  lower_call.get_cost_to_buy(self.sarkhat_or_latest) - higher_call.get_cost_to_sell( False, self.sarkhat_or_latest)
+
+    def __calculate_expected_return(self, higher_call, lower_call):
+        strike = higher_call.get_strike_price()
+        return lower_call.get_value_at_price(strike) - higher_call.get_value_at_price(strike)
+    
+    def __calculte_confidence_interval(self, higher_call, lower_call):
+        return (1- higher_call.get_strike_price() / (higher_call.get_underlying_asset().get_cost(self.sarkhat_or_latest)+ 0.0001)) * 100
+    

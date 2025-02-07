@@ -37,6 +37,13 @@ class Tseapp:
         results = self.market_info.apply_filter(the_filter)
         return results
     
+    def get_bull_call_spread_filter(self, max_risk,min_days_to_mature,min_ROI):
+        the_filter = Bull_Call_Spread_Filter(min_ROI, max_risk, min_days_to_mature)
+        self.market_info.reset_informations()
+        self.data_provider.get_info(self.market_info)
+        results = self.market_info.apply_filter(the_filter)
+        return results
+    
 
     def get_protective_put_filter(self, min_dif,max_dif, min_ROI,min_days_to_mature):
         the_filter = Protective_Put_Filter(min_dif,max_dif,min_days_to_mature,min_ROI)
