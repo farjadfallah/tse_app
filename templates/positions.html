@@ -39,6 +39,18 @@
         <br>
         <br>
     </form>
+    <form method="POST" action="/add_bull_call_spread_position" enctype="multipart/form-data">
+        <input type="str" name="cc_l_call_name" placeholder="l_call_name">
+        <input type="str" name="cc_h_call_name" placeholder="h_call_name">
+        <input type="int" name="cc_volume" placeholder="volume">
+        <input type="int" name="cc_ua_price" placeholder="ua_price">
+        <input type="int" name="cc_l_call_price" placeholder="l_call_price">
+        <input type="int" name="cc_h_call_price" placeholder="h_call_price">
+        <input type="int" name="cc_days_to_mature" placeholder="days_to_mature">
+        <input type="submit" value="add_bull_call_spread">
+        <br>
+        <br>
+    </form>
     <form method="POST" action="/save_portfolio" enctype="multipart/form-data">
         <input type="submit" value="save_portfollio">
     </form>
@@ -83,6 +95,60 @@
         </tr>
         {%endfor%}
     </table>
+
+
+    <!-- the_result = {"l_call_name": str(self.l_call_name)}
+    the_result = {"h_call_name": str(self.call_name)}
+    the_result["volume"] = self.volume
+    the_result["ex_days_to_mature"] = self.days_to_mature_when_enter
+    the_result["ex_till_loss"] = round(self.expected_untill_loss, 1)
+    the_result["ex_ROI"] = round(self.expected_ROI, 1)
+    the_result["days_to_mature"] = self.call_op.get_days_till_maturity()
+    the_result["l_call_price"] = round(self.l_call_price.get_cost_to_sell())
+    the_result["h_call_price"] = self.call_op.get_cost_to_buy()
+    the_result["till_loss"] = round(new_untill_loss, 1)
+    the_result["taken_profit"] = round(taken_profit, 1)
+    the_result["taken_ROI"] = round(taken_ROI, 1)
+    the_result["new_ROI"] = round(new_roi, 1) -->
+
+    <p>bull call spreads:</p>
+    <table>
+        <tr>
+            <th>lower call</th>
+            <th>higher call</th>
+            <th>volume</th>
+            <th>ex days mature</th>
+            <th>ex till loss</th>
+            <th>ex ROI</th>
+            <th>days mature</th>
+            <th>lower call price</th>
+            <th>higher call price</th>
+            <th>taken profit</th>
+            <th>taken ROI</th>
+            <th>till loss</th>
+            <th>ROI</th>
+        </tr>
+        {% for result in results[1]: %}
+        <tr>
+            <td>{{result["l_call_name"]}}</td>
+            <td>{{result["h_call_name"]}}</td>
+            <td>{{result["volume"]}}</td>
+            <td>{{result["ex_days_to_mature"]}}</td>
+            <td>{{result["ex_till_loss"]}}</td>
+            <td>{{result["ex_ROI"]}}</td>
+            <td>{{result["days_to_mature"]}}</td>
+            <td>{{result["l_call_price"]}}</td>
+            <td>{{result["h_call_price"]}}</td>
+            <td>{{result["taken_profit"]}}</td>
+            <td>{{result["taken_ROI"]}}</td>
+            <td>{{result["till_loss"]}}</td>
+            <td>{{result["new_ROI"]}}</td>
+        </tr>
+        {%endfor%}
+    </table>
+
+
+
     <p>total value = {{total_value/10000}}</p>
 </body>
 

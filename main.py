@@ -71,6 +71,7 @@ def positions():
     information = None
     
     results = the_app.get_current_positions_State()
+    print()
     total_value  = the_app.get_total_portfolio_value()
     return render_template('positions.html', results=results, total_value = total_value) 
 
@@ -88,6 +89,23 @@ def add_covered_call_position():
     days_to_mature = int(information["cc_days_to_mature"]) if information != None else 0
     the_app.add_covered_Call_position(call_name, volume, ua_price, call_price, days_to_mature)
     return redirect("/positions")
+
+@app.route("/add_bull_call_spread_position", methods=["POST"])
+def add_bull_call_spread_position():
+    information = None
+    if request.method == "POST":
+        information = request.form
+    volume = float(information["cc_volume"]) if information != None else 0
+    l_call_price = int(information["cc_l_call_price"]) if information != None else 0
+    h_call_price = int(information["cc_h_call_price"]) if information != None else 0
+    l_call_name=  str(information["cc_l_call_name"]) if information != None else 0
+    h_call_name = str(information["cc_h_call_name"]) if information != None else 0
+
+    ua_price = float(information["cc_ua_price"]) if information != None else 0
+    days_to_mature = int(information["cc_days_to_mature"]) if information != None else 0
+    the_app.add_bull_call_spread_position( h_call_name, h_call_price, l_call_name, l_call_price, volume, days_to_mature, ua_price)
+    return redirect("/positions")
+
 
 @app.route("/save_portfolio", methods=["POST"])
 def save_portfolio():

@@ -63,6 +63,12 @@ class Tseapp:
         self.data_provider.get_info(self.market_info)
         self.open_postion_record.add_covered_call(Covered_Call_Position_Record(self.market_info,call_name,call_price,ua_price,volume,days_to_mature))
 
+    def add_bull_call_spread_position(self, h_call_name, h_call_price, l_call_name, l_call_price, volume, days_to_mature_when_enter, ua_entry_price):
+        self.market_info.reset_informations()
+        self.data_provider.get_info(self.market_info)
+        self.open_postion_record.add_bull_call_spread(Bull_Call_Spread_Record(self.market_info, h_call_name, h_call_price, l_call_name, l_call_price, volume, days_to_mature_when_enter, ua_entry_price ))
+
+
     def save_portfolio(self):
         self.open_postion_record.save_file()
 

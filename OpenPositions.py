@@ -11,15 +11,19 @@ class OpenPostionsRecords:
         self.market_info = _market_info
 
    
-    
+    def add_bull_call_spread(self, bull_call_spread):
+        self.bull_call_spread_list.append(bull_call_spread)
 
     def add_covered_call(self, covered_call):
         self.covered_calls_list.append(covered_call)
 
     def get_current_state(self):
-        final_result =[[],[],[]]
+        final_result =[[],[],[],[]]
         for covered_call in self.covered_calls_list:
             final_result[0].append(covered_call.get_current_state())
+        
+        for bull_call_spread in self.bull_call_spread_list:
+            final_result[1].append(bull_call_spread.get_current_state())
         print(final_result)
         return final_result
     
@@ -29,21 +33,37 @@ class OpenPostionsRecords:
             the_list.append(record.save_file_output())
 
         df = pd.DataFrame(the_list, columns=['call_name', 'volume', 'ua_asset_price', 'call_price', 'days_to_mature'])
-        df.to_csv('my_portfolio.csv', index=False, encoding="utf8")
+        df.to_csv('my_portfolio_cc.csv', index=False, encoding="utf8")
+
+        the_list = []
+        for record in self.bull_call_spread_list:
+            the_list.append(record.save_file_output())
+
+        df = pd.DataFrame(the_list, columns=['h_call_name', 'l_call_name', 'volume', 'ua_asset_price', 'l_call_price', 'h_call_price', 'days_to_mature'])
+        df.to_csv('my_portfolio_bcs.csv', index=False, encoding="utf8")
     
     def load_file(self):
         self.covered_calls_list = []
         self.arbitrages_list = []
         self.protective_puts_list =[]
-        df = pd.read_csv('my_portfolio.csv', encoding="utf8")
+        self.bull_call_spread_list =[]
+        df = pd.read_csv('my_portfolio_cc.csv', encoding="utf8")
         for index, row in df.iterrows():
             new_covered_Call =Covered_Call_Position_Record(self.market_info, row['call_name'],row['call_price'],row['ua_asset_price'],row['volume'],row['days_to_mature'] )
             self.add_covered_call(new_covered_Call)
+
+        df = pd.read_csv('my_portfolio_bcs.csv', encoding="utf8")
+        for index, row in df.iterrows():
+            new_bull_call_spread =Bull_Call_Spread_Record(self.market_info, row['h_call_name'], row['h_call_price'], row['l_call_name'], row['l_call_price'], row['volume'], row['days_to_mature'],  row['ua_asset_price'] )
+            self.add_bull_call_spread(new_bull_call_spread)
            
 
     def get_current_portfolio_value(self):
         total_value = 0
         for record in self.covered_calls_list:
+            total_value += record.get_total_value()
+        
+        for record in self.bull_call_spread_list:
             total_value += record.get_total_value()
         
         return total_value
@@ -192,7 +212,7 @@ class Bull_Call_Spread_Record(Record):
 
     def get_current_state(self):
         self.call_op = self.market_info.find_option_with_name(self.call_name)
-        self.l_call = self.market_info.find_option_with_name(self._l_call_name)
+        self.l_call = self.market_info.find_option_with_name(self.l_call_name)
         if(self.call_op == None or self.l_call == None):
             result = self.__make_dummy_result()
             return result 
@@ -201,7 +221,7 @@ class Bull_Call_Spread_Record(Record):
         # if(tmp_val == 0):
         #     tmp_val = self.ua_asset.get_cost_to_buy()
         new_untill_loss = self.__calculte_confidence_interval(self.ua_asset.get_cost_to_sell())
-        new_roi = self.__calculate__ROI(self._l_call_name.get_cost_to_sell(), self.call_op.get_cost_to_buy(), self.call_op.get_days_till_maturity())
+        new_roi = self.__calculate__ROI(self.l_call.get_cost_to_sell(False), self.call_op.get_cost_to_buy(), self.call_op.get_days_till_maturity())
         taken_profit = self.__get_taken_profit()
         taken_ROI = self.get_roi(taken_profit, self.days_to_mature_when_enter-self.call_op.get_days_till_maturity()+1)
 
@@ -209,25 +229,29 @@ class Bull_Call_Spread_Record(Record):
         result = self.__make_result(new_untill_loss, new_roi, taken_profit, taken_ROI)
         return result
         
+
+
     def save_file_output(self):
-        the_list = [self.call_name, self.volume, self.ua_entry_price, self.call_entry_price, self.days_to_mature_when_enter]
+        the_list = [self.call_name,  self.l_call_name, self.volume, self.ua_entry_price, self.l_call_price, self.call_entry_price, self.days_to_mature_when_enter]
         return the_list
         
     def get_total_value(self):
         if(self.call_op == None):
             return 0
-        return self.volume * ( self.ua_asset.get_cost_to_sell() - self.call_op.get_cost_to_buy())
+        return self.volume * ( self.l_call.get_cost_to_sell(False) - self.call_op.get_cost_to_buy())
     
 
     def __make_dummy_result(self):
-        the_result = {"call_name": str(self.call_name)}
+        the_result = {"l_call_name": str(self.l_call_name)}
+        the_result = {"h_call_name": str(self.call_name)}
         the_result["volume"] = self.volume
         the_result["ex_days_to_mature"] = self.days_to_mature_when_enter
         the_result["ex_till_loss"] = 0
         the_result["ex_ROI"] = 0
         the_result["days_to_mature"] = 0
         the_result["ua_price"] = 0
-        the_result["call_price"] = 0
+        the_result["l_call_price"] = 0
+        the_result["h_call_price"] = 0
         the_result["till_loss"] =0
         the_result["taken_profit"] = 0
         the_result["taken_ROI"] = 0
@@ -236,13 +260,13 @@ class Bull_Call_Spread_Record(Record):
 
     def __make_result(self, new_untill_loss, new_roi, taken_profit, taken_ROI):
         the_result = {"l_call_name": str(self.l_call_name)}
-        the_result = {"h_call_name": str(self.call_name)}
+        the_result["h_call_name"] = str(self.call_name)
         the_result["volume"] = self.volume
         the_result["ex_days_to_mature"] = self.days_to_mature_when_enter
         the_result["ex_till_loss"] = round(self.expected_untill_loss, 1)
         the_result["ex_ROI"] = round(self.expected_ROI, 1)
         the_result["days_to_mature"] = self.call_op.get_days_till_maturity()
-        the_result["l_call_price"] = round(self.l_call_price.get_cost_to_sell())
+        the_result["l_call_price"] = round(self.l_call.get_cost_to_sell(False))
         the_result["h_call_price"] = self.call_op.get_cost_to_buy()
         the_result["till_loss"] = round(new_untill_loss, 1)
         the_result["taken_profit"] = round(taken_profit, 1)
@@ -265,7 +289,7 @@ class Bull_Call_Spread_Record(Record):
         return underlying_asset.get_value_at_price(strike) - call_option.get_value_at_price(strike)
     
     def __calculte_confidence_interval(self, ua_asset_price):
-        return ((self.ua_entry_price- self.call_entry_price)/ ua_asset_price-1) * 100
+        return ((self.call_op.get_strike_price())/ ua_asset_price-1) * 100
 
     def __get_taken_profit(self):
-        return ((self.l_call.get_cost_to_sell() -self.call_op.get_cost_to_buy() ) / (self.l_call_price - self.call_entry_price) - 1)*100
+        return ((self.l_call.get_cost_to_sell(False) -self.call_op.get_cost_to_buy() ) / (self.l_call_price - self.call_entry_price) - 1)*100
